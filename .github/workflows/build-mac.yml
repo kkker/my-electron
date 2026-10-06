@@ -10,6 +10,11 @@ jobs:
   release:
     runs-on: macos-14 # 使用 GitHub 官方最新的 macOS 執行環境
     
+    # 🌟 【關鍵修正】把 Token 放到全域 Job 環境變數，確保所有步驟與底層打包工具都能讀取
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     # 關鍵：利用 Matrix 矩陣，讓同一個腳本同時在雲端產生兩種晶片任務
     strategy:
       matrix:
@@ -42,13 +47,3 @@ jobs:
         run: |
           export CSC_IDENTITY_AUTO_DISCOVERY=false
           npx electron-builder --mac --${{ matrix.architecture }}
-
-      # 6. 將打包好的 .dmg 檔案作為 Release Artifacts 儲存並發布到 GitHub Release 頁面上
-      - name: Release App
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: release/*.dmg
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub 自動產生的安全權限密鑰
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 關鍵修正：將 GITHUB_TOKEN 同步帶入為 GH_TOKEN，讓工具擁有雲端發布的寫入權限
