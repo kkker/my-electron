@@ -51,3 +51,4 @@ jobs:
           files: release/*.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub 自動產生的安全權限密鑰
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 關鍵修正：將 GITHUB_TOKEN 同步帶入為 GH_TOKEN，讓工具擁有雲端發布的寫入權限
