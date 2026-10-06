@@ -1,0 +1,11 @@
+node_modules/
+
+# --- 環境變數與敏感資訊 ---
+.env
+.env.*
+!.env.example
+
+# --- 作業系統與 IDE 快取 ---
+.DS_Store
+.vscode/
+.idea/

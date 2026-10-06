@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  webtop-dev:
+    build: .               # 關鍵：告訴 Docker 使用當前目錄的 Dockerfile 來進行編譯
+    # image: lscr.io/linuxserver/webtop:ubuntu-mate
+    container_name: mac_electron_vnc
+    security_opt:
+      - seccomp:unconfined # 坑 1 解決：Electron 內建的 Chromium 沙盒需要此權限，否則視窗會打不開
+    shm_size: "1gb"        # 坑 2 解決：Electron/Chromium 渲染極度消耗共享記憶體，預設 64MB 會直接崩潰
+    ports:
+      - 6800:3000          # 網頁虛擬桌面連線埠 (Safari/Chrome 連這裡)
+      - 5173:5173          # 備用：React 開發伺服器對外埠
+    volumes:
+      - .:/config/workspace # 將你 Mac 的專案程式碼掛載進虛擬桌面的家目錄中
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Taipei
+    restart: unless-stopped

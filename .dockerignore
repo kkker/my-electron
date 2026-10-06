@@ -1,0 +1,20 @@
+
+# 敏感資訊與環境變數檔案
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Git 與版本控制（通常不需包進運行中的 Container）
+.git/
+.gitignore
+.gitattributes
+
+# 作業系統產生的垃圾檔案
+.DS_Store
+Thumbs.db
+
+# 專案說明與 IDE 設定（非執行必要檔案）
+.vscode/
+.idea/
