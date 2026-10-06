@@ -1,0 +1,53 @@
+name: Build MacOS DMG
+
+# 觸發條件：當你推送開版標籤（例如 v1.0.0）時，會自動啟動打包
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: macos-14 # 使用 GitHub 官方最新的 macOS 執行環境
+    
+    # 關鍵：利用 Matrix 矩陣，讓同一個腳本同時在雲端產生兩種晶片任務
+    strategy:
+      matrix:
+        architecture: [x64, arm64] # x64 代表 Intel 處理器；arm64 代表 Apple Silicon M系列
+
+    steps:
+      # 1. 複製 GitHub 上的程式碼到雲端機器
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. 設定 Node.js 環境（與你專案相符的 v20）
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-node-version: 20
+          cache: 'npm' # 自動開啟快取加速，讓下載套件變超快
+
+      # 3. 在雲端 Mac 上安裝所有依賴套件（此處是在原生環境，不會有 Docker 的平台衝突）
+      - name: Install dependencies
+        run: npm install
+
+      # 4. 編譯 React (Vite) 的靜態檔案
+      - name: Build React
+        run: npm run build:react
+
+      # 5. 觸發 Electron-Builder，並動態帶入目前矩陣的晶片架構指令
+      # 為了繞過開頭提到的蘋果 Gatekeeper「無法驗證開發者」警告瓶頸，我們加上 CSC_IDENTITY_AUTO_DISCOVERY=false 
+      # 這樣可以強迫 electron-builder 在沒有付費憑證的情況下，依然能順利產出未簽章的測試用 .dmg
+      - name: Build Electron for MacOS
+        run: |
+          export CSC_IDENTITY_AUTO_DISCOVERY=false
+          npx electron-builder --mac --${{ matrix.architecture }}
+
+      # 6. 將打包好的 .dmg 檔案作為 Release Artifacts 儲存並發布到 GitHub Release 頁面上
+      - name: Release App
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: release/*.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub 自動產生的安全權限密鑰
