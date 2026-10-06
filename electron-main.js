@@ -1,37 +1,41 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron'); // 1. 引入 ipcMain
 const path = require('path');
+const { exec } = require('child_process'); // 引入 Node.js 原生執行指令工具
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 1024,
     height: 768,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
+      nodeIntegration: true,     // 允許網頁端使用 Node 語法 (Docker 內部開發安全，適合此模式)
+      contextIsolation: false    // 關閉上下文隔離，讓 React 可以直接拿到 electron 模組
     }
   });
 
-  // 判斷是開發環境還是打包環境
-  // 透過檢查環境變數或是打包後的路徑是否存在
   const isDev = process.env.NODE_ENV === 'development';
-
   if (isDev) {
-    // 開發模式：直接讀取 React 的開發伺服器網址
     win.loadURL('http://localhost:5173');
   } else {
-    // 打包後，讀取 vite 產出的 dist 資料夾內的 index.html
     win.loadFile(path.join(__dirname, 'dist', 'index.html'));
   }
-
-
-
-  // 如果遇到畫面一片黑，可以嘗試關閉硬體加速（視 Docker 效能而定）
-  // app.disableHardwareAcceleration();
 }
+
+// 🌟 2. 建立 IPC 監聽器：當 React 發送 'request-docker-info' 訊號時觸發
+ipcMain.handle('request-docker-info', async (event, args) => {
+  return new Promise((resolve) => {
+    // 執行 Linux 指令，讀取 Docker 容器內部的 Ubuntu 版本資訊
+    exec('cat /etc/os-release', (error, stdout, stderr) => {
+      if (error) {
+        resolve(`讀取失敗: ${error.message}`);
+      } else {
+        resolve(stdout); // 將讀取到的 Linux 系統資訊回傳給 React
+      }
+    });
+  });
+});
 
 app.whenReady().then(() => {
   createWindow();
-
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
@@ -40,4 +44,3 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
-
