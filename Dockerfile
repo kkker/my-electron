@@ -1,6 +1,9 @@
+# docker-compose build --no-cache && docker-compose up -d
+## 預設情況下，如果配置沒變，Compose 不會重啟容器。若想強迫所有服務都重新建立並啟動容器，可加上 --force-recreate：
+# docker-compose up -d --build --force-recreate
+
 # 基礎映像檔：使用 LinuxServer.io 官方的 Ubuntu-MATE 桌面
 FROM lscr.io/linuxserver/webtop:ubuntu-mate
-
 
 # 1. 自動安裝適配 Ubuntu 26.04 新系統的 Electron GUI 依賴套件（已解決 t64 套件名稱問題）
 RUN apt-get update && apt-get install -y \
