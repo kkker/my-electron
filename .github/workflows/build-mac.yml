@@ -10,6 +10,10 @@ jobs:
   release:
     runs-on: macos-14 # 使用 GitHub 官方最新的 macOS 執行環境
     
+    # 🌟 【明確宣告權限】允許這個工作流建立 Release 並寫入檔案
+    permissions:
+      contents: write
+
     # 🌟 【關鍵修正】把 Token 放到全域 Job 環境變數，確保所有步驟與底層打包工具都能讀取
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
