@@ -1,6 +1,6 @@
 {
   "name": "electron-react-vite-app",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "author": "Author Name <author@myapp.com>",
   "main": "electron-main.js",
   "scripts": {
