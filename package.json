@@ -1,7 +1,11 @@
 {
   "name": "electron-react-vite-app",
-  "version": "1.0.5",
-  "author": "Author Name <author@myapp.com>",
+  "version": "1.0.6",
+  "description": "這是我的專案描述，不要留空，否則編譯日誌會噴 missed 警告",
+  "author": {
+    "name": "Author Name",
+    "email": "author@myapp.com"
+  },
   "main": "electron-main.js",
   "scripts": {
     "vite:start": "vite --host 0.0.0.0 --port 5173",
@@ -9,7 +13,9 @@
     "dev": "concurrently \"npm run vite:start\" \"wait-on http://localhost:5173 && npm run electron:start\"",
     "build:react": "vite build",
     "build:electron": "electron-builder --linux",
-    "package": "npm run build:react && npm run build:electron"
+    "build:win": "WINEPREFIX=/tmp/wine-prefix ELECTRON_BUILDER_CACHE=/tmp/electron-builder-cache electron-builder --win --x64",
+    "package": "npm run build:react && npm run build:electron",
+    "package:win": "npm run build:react && npm run build:win"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -46,6 +52,23 @@
         { "x": 410, "y": 220, "type": "link", "path": "/Applications" },
         { "x": 130, "y": 220, "type": "file" }
       ]
+    },
+    "win": {
+      "publisherName": "Your Company Name",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "${productName}_Setup_${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "MyDockerApp"
     }
   }
 }

@@ -1,4 +1,8 @@
+
+# Node artifact files
 node_modules/
+dist/**
+!dist/.gitkeep
 
 # --- 環境變數與敏感資訊 ---
 .env

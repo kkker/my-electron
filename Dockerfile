@@ -19,6 +19,14 @@ RUN apt-get update && apt-get install -y \
     libsecret-1-0 \
     alsa-utils
 
+# 🌟 1-2. 跨平台打包關鍵：在 Linux 容器內安裝 Wine & 檔案壓縮工具
+# 這是讓 Linux 能順利打包並編譯出 Windows .exe 檔的必備元件
+RUN apt-get install -y \
+    wine \
+    mono-complete \
+    zip \
+    unzip
+
 #    && rm -rf /var/lib/apt/lists/*
 
 # 2. 安裝 Node.js 20 官方 LTS 版本與 npm
