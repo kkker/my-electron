@@ -1,8 +1,10 @@
 
 # Node artifact files
 node_modules/
-dist/**
-!dist/.gitkeep
+dist/
+
+# 關鍵：忽略 Electron 打包出來的所有桌面安裝檔與快取
+release/
 
 # --- 環境變數與敏感資訊 ---
 .env
