@@ -1,0 +1,18 @@
+.app-container { padding: 2rem; font-family: sans-serif; background-color: #f8f9fa; color: #212529; min-height: 100vh; }
+.app-header h1 { margin-bottom: 0.5rem; font-size: 1.8rem; }
+.subtitle { color: #6c757d; margin-top: 0; }
+.grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.status-card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.status-card h3 { font-size: 1rem; color: #495057; margin-top: 0; }
+.value-text { font-size: 1.5rem; font-weight: bold; margin: 0; }
+.text-blue { color: #007bff; } .text-green { color: #28a745; } .text-purple { color: #6f42c1; }
+.details-panel { background: white; margin-top: 2rem; padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.path-box { background: #e9ecef; padding: 1rem; border-radius: 4px; overflow-x: auto; margin: 1rem 0; }
+.migration-check-box { display: flex; align-items: flex-start; background: #d4edda; color: #155724; padding: 1rem; border-radius: 4px; margin-top: 1rem; }
+.check-icon { font-size: 1.5rem; margin-right: 1rem; font-weight: bold; }
+.check-text h4 { margin: 0 0 0.2rem 0; } .check-text p { margin: 0; font-size: 0.9rem; }
+.migration-check-box.is-warning { background: #fff3cd; color: #856404; }
+.migration-check-box.is-error { background: #f8d7da; color: #721c24; margin-top: 2rem; }
+.action-button { margin-top: 1rem; padding: 0.6rem 1.2rem; font-size: 1rem; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 4px; }
+.action-button:disabled { background: #9e9e9e; cursor: wait; }
+pre.path-box { white-space: pre-wrap; word-break: break-all; }

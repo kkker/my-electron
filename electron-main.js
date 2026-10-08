@@ -1,6 +1,9 @@
 const { app, BrowserWindow, ipcMain } = require('electron'); // 1. 引入 ipcMain
 const path = require('path');
 const { exec } = require('child_process'); // 引入 Node.js 原生執行指令工具
+const { initDatabase, getDatabaseInfo, closeDatabase } = require('./db/database'); // 本地 SQLite (Knex)
+
+let dbInitError = null; // 記錄資料庫初始化失敗原因，讓畫面能顯示錯誤而不是整個程式崩潰
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -12,7 +15,8 @@ function createWindow() {
     }
   });
 
-  const isDev = process.env.NODE_ENV === 'development';
+  // 未打包（npm run dev）時載入 Vite 開發伺服器；打包後的安裝檔載入 dist 靜態檔案
+  const isDev = !app.isPackaged;
   if (isDev) {
     win.loadURL('http://localhost:5173');
   } else {
@@ -69,11 +73,36 @@ ipcMain.handle('request-docker-info', async (event, args) => {
   });
 });
 
-app.whenReady().then(() => {
+// 🌟 3. 建立 IPC 監聽器：當 React 發送 'request-db-info' 訊號時，回傳本地 SQLite 資料庫狀態
+ipcMain.handle('request-db-info', async () => {
+  if (dbInitError) {
+    return { ok: false, error: `資料庫初始化失敗: ${dbInitError.message}` };
+  }
+  try {
+    return { ok: true, data: await getDatabaseInfo() };
+  } catch (error) {
+    return { ok: false, error: error.message };
+  }
+});
+
+app.whenReady().then(async () => {
+  // 先完成資料庫 migration 再開視窗，確保畫面拿到的一定是最新 Schema
+  try {
+    await initDatabase();
+  } catch (error) {
+    dbInitError = error;
+    console.error('[SQLite] 初始化失敗:', error);
+  }
+
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
+
+// 程式結束前關閉資料庫連線，避免 SQLite 檔案被鎖住
+app.on('will-quit', () => {
+  closeDatabase();
 });
 
 app.on('window-all-closed', () => {
