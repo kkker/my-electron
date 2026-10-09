@@ -48,8 +48,7 @@ async function getDatabaseInfo() {
 
   return {
     appVersion: app.getVersion(),
-    knexVersion: getPackageVersion('knex'),
-    betterSqlite3Version: getPackageVersion('better-sqlite3'),
+    libraries: ['knex', 'better-sqlite3'].map((name) => ({ name, version: getPackageVersion(name) })),
     sqliteVersion,
     schemaVersion, // 最後一支已執行 migration 的時間戳，尚未執行任何 migration 時為 'none'
     dbPath,

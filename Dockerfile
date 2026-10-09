@@ -33,8 +33,8 @@ RUN apt-get install -y \
 
 # 2. 安裝 Node.js 20 官方 LTS 版本與 npm
 RUN apt -y install curl dirmngr apt-transport-https lsb-release ca-certificates
-# v20.20.2
-RUN curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+# v22.x（Capacitor 8 需要 Node >= 22）
+RUN curl -sL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 RUN apt-get install -y nodejs
 # RUN apt install npm # 除了 Node.js 之外，此命令還將安裝 NPM 以及其他依賴套件。
 RUN npm install -g npm@10.8.2 

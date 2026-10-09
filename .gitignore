@@ -6,6 +6,9 @@ dist/
 # 關鍵：忽略 Electron 打包出來的所有桌面安裝檔與快取
 release/
 
+# Docker 開發容器掛載出來的執行期資料（本地 SQLite 等），不納入版控
+.docker-data/
+
 # --- 環境變數與敏感資訊 ---
 .env
 .env.*

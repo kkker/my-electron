@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-
-// 關鍵：在 Electron 環境下的 React，可以用這行拿到 Electron 的通訊工具
-const { ipcRenderer } = window.require ? window.require('electron') : {};
+// 平台相關呼叫一律透過 platform 層，UI 不直接依賴 Electron / Capacitor
+import { getDbInfo, getSystemInfo, platformLabel } from './platform';
 
 // 將 byte 數轉成易讀的檔案大小
 const formatBytes = (bytes) => (bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`);
@@ -13,14 +12,10 @@ function App() {
   const [dbError, setDbError] = useState(null);
   const [dbLoading, setDbLoading] = useState(false);
 
-  // 🌟 透過 IPC 向主進程索取本地 SQLite 資料庫狀態
+  // 🌟 向平台層索取本地 SQLite 資料庫狀態
   const loadDbInfo = async () => {
-    if (!ipcRenderer) {
-      setDbError('目前不在 Electron 環境內，無法呼叫 IPC');
-      return;
-    }
     setDbLoading(true);
-    const result = await ipcRenderer.invoke('request-db-info');
+    const result = await getDbInfo();
     if (result.ok) {
       setDbInfo(result.data);
       setDbError(null);
@@ -35,16 +30,10 @@ function App() {
     loadDbInfo();
   }, []);
 
-  // 呼叫 Electron 主進程的功能
+  // 向平台層索取作業系統資訊
   const getDockerSystemInfo = async () => {
-    if (ipcRenderer) {
-      setSysInfo('正在從主進程獲取資訊...');
-      // 發送 IPC 訊號，並等待主進程回傳 Linux 系統資訊
-      const result = await ipcRenderer.invoke('request-docker-info');
-      setSysInfo(result);
-    } else {
-      setSysInfo('目前不在 Electron 環境內，無法呼叫 IPC');
-    }
+    setSysInfo('正在獲取資訊...');
+    setSysInfo(await getSystemInfo());
   };
 
   const isUpToDate = dbInfo && dbInfo.pendingMigrations.length === 0;
@@ -54,7 +43,7 @@ function App() {
       <header className="app-header">
         <h1>🗄️ 本地 SQLite 資料庫狀態</h1>
         <p className="subtitle">
-          App v{dbInfo ? dbInfo.appVersion : '-'} ・ 資料由 React 透過 IPC 向 Electron 主進程即時取得
+          App v{dbInfo ? dbInfo.appVersion : '-'} ・ 資料來源：{platformLabel}
         </p>
       </header>
 
@@ -72,13 +61,14 @@ function App() {
         <>
           <div className="grid-container">
             <div className="status-card">
-              <h3>Knex 版本</h3>
-              <p className="value-text text-blue">v{dbInfo.knexVersion}</p>
+              <h3>資料庫套件</h3>
+              {dbInfo.libraries.map(({ name, version }) => (
+                <p key={name} className="subtitle">{name} v{version}</p>
+              ))}
             </div>
             <div className="status-card">
               <h3>SQLite 引擎版本</h3>
               <p className="value-text text-green">v{dbInfo.sqliteVersion}</p>
-              <p className="subtitle">better-sqlite3 v{dbInfo.betterSqlite3Version}</p>
             </div>
             <div className="status-card">
               <h3>Schema 版本（最後一支 Migration）</h3>
@@ -121,7 +111,7 @@ function App() {
 
       {/* 原有的 IPC 測試：顯示從作業系統底層撈出來的資料 */}
       <div className="details-panel">
-        <h3>📦 容器 / 作業系統資訊</h3>
+        <h3>📦 裝置 / 作業系統資訊</h3>
         <button className="action-button" onClick={getDockerSystemInfo}>
           獲取系統資訊
         </button>

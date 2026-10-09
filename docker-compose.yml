@@ -12,6 +12,9 @@ services:
       - 5173:5173          # 備用：React 開發伺服器對外埠
     volumes:
       - .:/config/workspace # 將你 Mac 的專案程式碼掛載進虛擬桌面的家目錄中
+      # Electron 的 userData（含本地 SQLite 資料庫 app.sqlite3）掛載到主機，容器重建後資料不會遺失
+      # 掛整個資料夾而非單一檔案：SQLite 會在同資料夾產生 -journal / -wal 暫存檔
+      - ./.docker-data/electron-userdata:/config/.config/electron-react-vite-app
     environment:
       - PUID=1000
       - PGID=1000

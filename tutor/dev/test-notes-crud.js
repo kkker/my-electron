@@ -50,6 +50,7 @@ const knex = require('knex')({
 //   id: 1,
 //   title: '測試筆記',
 //   content: '第一版內容',
+//   is_done: 0,
 //   created_at: '2026-10-09 04:39:52',
 //   updated_at: '2026-10-09 04:39:52'
 // }
@@ -57,6 +58,7 @@ const knex = require('knex')({
 //   id: 1,
 //   title: '測試筆記',
 //   content: '第二版內容',
+//   is_done: 0,
 //   created_at: '2026-10-09 04:39:52',
 //   updated_at: '2026-10-09 04:39:52'
 // }

@@ -16,6 +16,7 @@
     "build:win": "WINEPREFIX=/tmp/wine-prefix ELECTRON_BUILDER_CACHE=/tmp/electron-builder-cache electron-builder --win --x64",
     "package": "npm run build:react && npm run build:electron",
     "package:win": "npm run build:react && npm run build:win",
+    "cap:sync": "npm run build:react && cap sync android",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
@@ -25,6 +26,11 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@capacitor-community/sqlite": "^8.1.1",
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/device": "^8.0.3",
     "@vitejs/plugin-react": "^4.3.1",
     "concurrently": "^8.2.2",
     "electron": "^30.0.0",
