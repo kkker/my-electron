@@ -17,6 +17,7 @@
     "package": "npm run build:react && npm run build:electron",
     "package:win": "npm run build:react && npm run build:win",
     "cap:sync": "npm run build:react && cap sync android",
+    "android:build": "npm run cap:sync && cd android && ./gradlew assembleDebug",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
